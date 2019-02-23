@@ -1,0 +1,16 @@
+
+Hey There!  {{formData.items.pens}}
+
+<div>
+  <form>
+    <fieldset *ngFor="let group of objectKeys(formData.groups)">
+      <label>{{group}}</label>
+   
+      <input type="text" (change)="onChange(group)" name="{{group}}" [(ngModel)]="groupTotal[group]">
+    </fieldset>
+    
+  </form>
+
+</div>
+
+
