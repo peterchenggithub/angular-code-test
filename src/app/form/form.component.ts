@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormData } from '../form-data';
+import {FormGroup, FormControl,  Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-form',
@@ -14,36 +15,30 @@ export class FormComponent implements OnInit {
     this.init();
   }
 
+
   objectKeys = Object.keys;
 
-  formData : any = {
-    "items": {
-             "pens": 100,
-             "sharpeners": 32,
-             "pencils": 76,
-             "fish": 12,
-             "chicken": 13,
-             "veg": 43,
-             "chocolate": 4
-    },
-    "groups": {
-             "stationery": ["pens", "sharpeners", "pencils"],
-             "food": ["fish", "chicken", "veg", "chocolate"]
-    }
-  }
+  @Input() formData : any;
+  
+  formGroup: FormGroup = new FormGroup({});
 
   groupTotal:any = {};
   
   onChange(group : string) : void {
     console.log(group);
-    this.updateAmt(group);
+    if(this.getControl(group).valid){
+      this.updateAmt(group);
+    }
+
   }
 
   init() : void {
     console.log('init');
-    
+ 
     for(let group in this.formData.groups){
-      this.groupTotal[group] = this.calTotal(group);
+      let control: FormControl = new FormControl(group, [Validators.required, Validators.pattern('[0-9]*'), Validators.min(0), Validators.max(1000)]);
+      control.setValue( this.calTotal(group));
+      this.formGroup.addControl(group, control);
     }
     console.log(this.groupTotal);
   }
@@ -64,17 +59,19 @@ export class FormComponent implements OnInit {
     let idx = 0;
     for(let item of this.formData.groups[group]){
       if(idx == 0){
-        this.formData.items[item] = parseInt(this.groupTotal[group]);
+        this.formData.items[item] = parseInt(this.getControl(group).value);
       }else{
         this.formData.items[item] = 0;
       }
       
       idx++;
     }
-    //let firstItem = this.formData.groups[group][0];
-   // this.formData.items[firstItem] = this.groupTotal[group];
+
+    console.log('updateAmt');
     console.log(this.formData);
   }
+
+  getControl(name: string) { return this.formGroup.get(name); }
 
 
 }

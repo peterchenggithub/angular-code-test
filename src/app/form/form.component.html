@@ -1,15 +1,29 @@
 
-Hey There!  {{formData.items.pens}}
-
 <div>
   <form>
-    <fieldset *ngFor="let group of objectKeys(formData.groups)">
+    <fieldset *ngFor="let group of objectKeys(formData.groups)" [formGroup]="formGroup">
       <label>{{group}}</label>
    
-      <input type="text" (change)="onChange(group)" name="{{group}}" [(ngModel)]="groupTotal[group]">
+      <input type="text" (change)="onChange(group)" name="{{group}}" formControlName="{{group}}" required pattern="[0-9]*"/>
+     
+      <div *ngIf="getControl(group).invalid">
+    
+          <div *ngIf="getControl(group).errors.required">
+              required
+          </div>
+          <div *ngIf="getControl(group).errors.pattern">
+              number only
+          </div>
+          <div *ngIf="getControl(group).errors.min || getControl(group).errors.max">
+              0 - 1000
+          </div>
+        </div>
+     
     </fieldset>
     
+   
   </form>
+
 
 </div>
 
